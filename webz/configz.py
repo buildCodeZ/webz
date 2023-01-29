@@ -7,8 +7,6 @@ import os
 import sys
 import buildz
 
-g_js_path = os.path.join(__path__[0], "js")
-
 """
 [
 (url, id),

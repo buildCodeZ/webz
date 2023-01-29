@@ -5,6 +5,7 @@ import os
 # 下面三行代码可以删除
 from . import __path__
 webpath = os.path.dirname(os.path.dirname(os.path.dirname(__path__[0])))
+sys.path.append(r"D:\root\gits\buildz\buildz")
 sys.path.append(webpath)
 # 上面三行代码可以删除
 
@@ -18,10 +19,22 @@ class Test(webz.Base):
 
 pass
 
+def show():
+    print("try such url: http://127.0.0.1:8080/func/abc?d=e&f=g")
+    print("try such url: http://127.0.0.1:8080/page/test.html")
 
 from webz import configz
 
-def run(fps):
+def runz(fps):
+    show()
     configz.run(fps)
+
+pass
+
+from webz import config
+def run(fp):
+    show()
+    webz.init(config.Config(fp))
+    webz.run(8080, "127.0.0.1")
 
 pass

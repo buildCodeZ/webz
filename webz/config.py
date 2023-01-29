@@ -81,12 +81,12 @@ class Config(base.Base):
             if single == "1":
                 path = imports_obj(path)
             self.urls.append([url, path, single, args, maps])
-        self.reset()
     def __init__(self, filepaths, root = None):
         super(Config, self).__init__()
         self.filepaths = filepaths
         if root is not None:
             sys.path.append(root)
+        self.reset()
     def deal(self):
         url = self.input.url
         type = self.input.type
