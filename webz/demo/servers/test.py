@@ -5,7 +5,6 @@ import os
 # 下面三行代码可以删除
 from . import __path__
 webpath = os.path.dirname(os.path.dirname(os.path.dirname(__path__[0])))
-sys.path.append(r"D:\root\gits\buildz\buildz")
 sys.path.append(webpath)
 # 上面三行代码可以删除
 
