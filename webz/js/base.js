@@ -1,6 +1,6 @@
 var scripts = [
-"/page/js/jquery/1.10.2/jquery.min.js",
-"/page/js/vue/vue.js",
+"/webz/js/jquery/1.10.2/jquery.min.js",
+"/webz/js/vue/vue.js",
 //"/page/js/clipboard/clipboard.min.js"
 ]
 var styles=[]
@@ -29,6 +29,6 @@ addStyles = (urls)=>{
     addSrcs(urls, addStyle)
 }
 addScripts(scripts)
-addScript("/page/js/utils.js")
+addScript("/webz/js/utils.js")
 
 addStyles(styles)

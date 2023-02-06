@@ -2,6 +2,6 @@
     //(url前缀, key, 初始化参数)
     ("func/", test.func)
     ("page/", webz.static, ["page", "pages"])
-    ("js/webz/", webz.static, ["js/webz", "webz.js"])
-    ("css/webz/", webz.static, ["css/webz", "webz.css"])
+    ("webz/js/", webz.static, ["webz/js", "webz.js"])
+    ("webz/css/", webz.static, ["webzcss", "webz.css"])
 ]

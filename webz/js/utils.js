@@ -262,4 +262,4 @@ let _={
 window.onload=()=>{
     console.log("window.onload");
 }
-addScript("/page/js/utils_img.js")
+//addScript("/webz/js/utils_img.js")
