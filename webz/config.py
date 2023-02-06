@@ -54,7 +54,7 @@ class Static(base.Base):
             self.output.finish(True)
 
 pass
-class Config(base.Base):
+class Config:
     def add_file(self, filepath):
         self.filepaths.append(filepath)
         self.reset()
@@ -87,10 +87,46 @@ class Config(base.Base):
         if root is not None:
             sys.path.append(root)
         self.reset()
+    def GET(self, url):
+        return ConfigWeb(self).GET(url)
+    def POST(self, url):
+        return ConfigWeb(self).POST(url)
+
+pass
+class ConfigWeb(base.Base):
+    def add_file(self, filepath):
+        self.filepaths.append(filepath)
+        self.reset()
+    def reset(self):
+        filepaths = self.filepaths
+        if type(filepaths) == str:
+            filepaths = [filepaths]
+        self.filepaths = filepaths
+        rst = []
+        self.urls = []
+        for fp in self.filepaths:
+            rst += confz.loadfile(fp)
+        for val in rst:
+            if len(val)<2:
+                print("Error Config:", val)
+                continue
+            if len(val) == 2:
+                val.append("0")
+            if len(val) == 3:
+                val.append([])
+            if len(val) == 4:
+                val.append({})
+            url, path, single, args, maps = val
+            if single == "1":
+                path = imports_obj(path)
+            self.urls.append([url, path, single, args, maps])
+    def __init__(self, config):
+        super(ConfigWeb, self).__init__()
+        self.config = config
     def deal(self):
         url = self.input.url
         type = self.input.type
-        for pt, obj, single, args, maps in self.urls:
+        for pt, obj, single, args, maps in self.config.urls:
             if len(pt)==0 or pt[0]!="^":
                 pt = "^"+pt
             if len(re.findall(pt, url))== 0:

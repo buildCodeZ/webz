@@ -56,7 +56,8 @@ def listfiles(dirpath, suffixs=[], excepts=[]):
 
 pass
 
-class Config(base.Base):
+import traceback
+class Config:
     def add_file(self, filepath):
         self.filepaths.append(filepath)
         self.reset()
@@ -86,15 +87,27 @@ class Config(base.Base):
         if root is not None:
             sys.path.append(root)
         self.reset()
+    def GET(self, url):
+        return ConfigWeb(self).GET(url)
+    def POST(self, url):
+        return ConfigWeb(self).POST(url)
+
+pass
+
+class ConfigWeb(base.Base):
+    def __init__(self, config):
+        super(ConfigWeb, self).__init__()
+        self.config = config
     def deal(self):
+        config = self.config
         url = self.input.url
         type = self.input.type
-        for pt, obj, args, maps in self.urls:
+        for pt, obj, args, maps in config.urls:
             if len(pt)==0 or pt[0]!="^":
                 pt = "^"+pt
             if len(re.findall(pt, url))== 0:
                 continue
-            obj = self.builds.get(obj)
+            obj = config.builds.get(obj)
             obj._set(self)
             try:
                 obj.init(*args, **maps)
@@ -105,6 +118,7 @@ class Config(base.Base):
                 else:
                     pass
             except Exception as exp:
+                traceback.print_exc()
                 print("Exp:", exp)
                 self.output.set_str(str(exp))
                 self.output.finish(True)
@@ -113,8 +127,6 @@ class Config(base.Base):
         if self.output() is None:
             self.output.set_str("404 Not Found Config")
 pass
-
-
 def run(profilepaths):
     dirpath = os.path.join(__path__[0], "profiles", "base.confz")
     default_profiles = [dirpath]

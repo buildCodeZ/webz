@@ -117,7 +117,9 @@ let _={
     key:{
         data:"_.data",
         stack:"_.stack",
-        local:"_.local"
+        local:"_.local",
+        refresh: "_.refresh",
+        backData: "_.backData"
     },
     cleanCache(){
         for(var k in _.key){
@@ -141,12 +143,12 @@ let _={
         console.log("jump:"+url)
         console.log("data:"+data)
         console.log(data)
-        _.cache.set(_.key.data, data);
         if (_.cache.get(_.key.stack) == null){
             _.cache.set(_.key.stack, [])
         }
         var stack = _.cache.get(_.key.stack);
-        stack = stack.concat(window.location.href);
+        stack = stack.concat({url:window.location.href, data:_.data()});
+        _.cache.set(_.key.data, data);
         _.cache.set(_.key.stack, stack)
         window.location.href=url;
     },
@@ -157,11 +159,30 @@ let _={
         if (stack.length==0){
             return;
         }
-        var url = stack[stack.length-1]
+        _.cache.set(_.key.backData, data);
+        var obj = stack[stack.length-1]
+        var url = obj['url'];
+        var cacheData = obj['data']
         stack.pop();
         _.cache.set(_.key.stack, stack);
-        _.cache.set(_.key.data, data);
+        _.cache.set(_.key.data, cacheData);
         window.location.href=url;
+    },
+    data: () => {
+        var _data = _.cache.get(_.key.data)
+        //_.cache.set(_.key.data, null)
+        if (_data==null){
+            _data={};
+        }
+        return _data;
+    },
+    backData: () => {
+        var _data = _.cache.get(_.key.backData)
+        //_.cache.set(_.key.data, null)
+        if (_data==null){
+            _data={};
+        }
+        return _data;
     },
     onload:(fc)=>{
         _._onload = fc
@@ -240,6 +261,5 @@ let _={
 }
 window.onload=()=>{
     console.log("window.onload");
-    _.load();
 }
 addScript("/page/js/utils_img.js")
