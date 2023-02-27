@@ -16,26 +16,25 @@ newVue=async (args)=>{
     while($.count>0){
         await sleep(100);
     }
-    args.el="#app"
+    if (!args.el) {
+        args.el="#app"
+    }
     var vue=new Vue(args)
     _.vue = vue
     return vue;
 }
 
 $.jump=function(url){
-    window.location.href=url;
+    //window.location.href=url;
+    $('body').load(url);
 }
 
 function sleepx(ms){
     var t = Date.now();
     while(Date.now() - t <= ms);
 }
-
 $.component=(url, id=null)=>{
     $.count+=1;
-    if(url.search(".html")<0){
-        url = url+".html"
-    }
     if(id == null){
         arr = url.split("/")
         id = arr[arr.length-1]
@@ -51,7 +50,49 @@ $.component=(url, id=null)=>{
     return this;
 }
 let component = $.component;
-$.submit=function(url, maps){
+
+$.upload=(url, data, success, error= (msg)=>{
+    console.log("error in $.upload");
+    console.log(msg);
+    console.log(msg.responseText)
+    }
+)=>{
+    var form = new FormData();
+    for (var k in data) {
+        form.append(k, data[k]);
+    }
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: form,
+        contentType: false,
+        processData: false,
+        success: success,
+        error: error
+    })
+}
+$.submit=(url, data, success, error= (msg)=>{
+    console.log("error in $.submit");
+    console.log(msg);
+    console.log(msg.responseText)
+    }
+)=>{
+    var form = new FormData();
+    for (var k in data) {
+        form.append(k, data[k]);
+    }
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: form,
+        contentType: false,
+        processData: false,
+        success: success,
+        error: error
+    })
+}
+
+$.submit_bk=function(url, maps){
     var body=$(document.body);
     var form = $("<form method='post'></form>");
     var input;
@@ -118,6 +159,7 @@ let _={
         data:"_.data",
         stack:"_.stack",
         local:"_.local",
+        href:"_.href",
         refresh: "_.refresh",
         backData: "_.backData"
     },
@@ -139,7 +181,11 @@ let _={
     jd(obj){
         return JSON.stringify(obj);
     },
-    jump:(url, data=null)=>{
+    body: (url) => {
+        _.cache.set(_.key.href, url);
+        $('body').load(url);
+    },
+    jump:(url, data=null, newPage=false)=>{
         console.log("jump:"+url)
         console.log("data:"+data)
         console.log(data)
@@ -147,12 +193,25 @@ let _={
             _.cache.set(_.key.stack, [])
         }
         var stack = _.cache.get(_.key.stack);
-        stack = stack.concat({url:window.location.href, data:_.data()});
+        var href = "";
+        if (newPage) {
+            href = window.location.href;
+        } else {
+            href = _.cache.get(_.key.href);
+        }
+        stack = stack.concat({url:href, data:_.data()});
         _.cache.set(_.key.data, data);
         _.cache.set(_.key.stack, stack)
-        window.location.href=url;
+        if (newPage) {
+            window.location.href=url;
+        } else {
+            _.body(url);
+        }
     },
-    back:(data=null)=>{
+    clean:() => {
+        _.cache.set(_.key.stack, []);
+    },
+    back:(data=null, newPage=false)=>{
         console.log("back:")
         console.log(data)
         var stack = _.cache.get(_.key.stack);
@@ -166,7 +225,21 @@ let _={
         stack.pop();
         _.cache.set(_.key.stack, stack);
         _.cache.set(_.key.data, cacheData);
-        window.location.href=url;
+        if (newPage) {
+            window.location.href=url;
+        } else {
+            _.body(url);
+        }
+        //$('body').load(url);
+        //window.location.href=url;
+    },
+    page: {
+        jump: (url, data=null) => {
+            _.jump(url, data, true);
+        },
+        back: (data=null) => {
+            _.back(data, true);
+        }
     },
     data: () => {
         var _data = _.cache.get(_.key.data)
@@ -183,31 +256,6 @@ let _={
             _data={};
         }
         return _data;
-    },
-    onload:(fc)=>{
-        _._onload = fc
-    },
-    _onload:()=>{
-
-    },
-    tryload:()=>{
-        data = _.cache.get(_.key.data);
-        if (data==null){
-            return;
-        }
-        _.data = data;
-        _._onload()
-        return data;
-    },
-    load:()=>{
-        data = _.cache.get(_.key.data)
-        //_.cache.set(_.key.data, null)
-        if (data==null){
-            data={};
-        }
-        _.data = data;
-        _._onload()
-        return data;
     },
     local:{
         clean(){

@@ -18,6 +18,17 @@ class Test(webz.Base):
 
 pass
 
+class TestFile(webz.Base):
+    def deal(self):
+        self.input.default(file={})
+        data = self.input.get()
+        file = data['file']
+        dt = file.file.read()
+        print("dt:", type(dt), len(dt))
+        self.output.set_bytes(dt)
+
+pass
+
 def show():
     print("try such url: http://127.0.0.1:8080/func/abc?d=e&f=g")
     print("try such url: http://127.0.0.1:8080/page/test.html")

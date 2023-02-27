@@ -11,6 +11,8 @@ def coding(code = None):
 
 pass
 class Output:
+    def header(self, *argv, **maps):
+        web.header(*argv, **maps)
     def __init__(self):
         self.init()
     def init(self):
@@ -48,8 +50,10 @@ class Input:
     def init(self, url = None, type = None):
         self.url = url
         self.type = type
+        self.default()
+    def default(self, **defaults):
+        self.datas_get = self.input(**defaults)
         self.datas_post = self.load()
-        self.datas_get = self.input()
         self.datas = self.datas_post
         self.datas.update(self.datas_get)
     def load(self):

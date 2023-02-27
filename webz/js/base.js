@@ -1,10 +1,3 @@
-var scripts = [
-"/webz/js/jquery/1.10.2/jquery.min.js",
-"/webz/js/vue/vue.js",
-//"/page/js/clipboard/clipboard.min.js"
-]
-var styles=[]
-
 addStyle=(url)=>{
     var s = "<link href='"+url+"' type='text/css' rel='stylesheet'/>";
     document.write(s);
@@ -24,11 +17,8 @@ addSrcs=(urls, addFc)=>{
 addScripts = (urls)=>{
     addSrcs(urls, addScript)
 }
-
+add_style = addStyle;
+add_script = addScript;
 addStyles = (urls)=>{
     addSrcs(urls, addStyle)
 }
-addScripts(scripts)
-addScript("/webz/js/utils.js")
-
-addStyles(styles)
