@@ -28,7 +28,7 @@ pass
 
 def listfiles(dirpath, suffixs=[], excepts=[]):
     files = os.listdir(dirpath)
-    files = [os.path.join(dirpath) for fp in files]
+    files = [os.path.join(dirpath, fp) for fp in files]
     if len(suffixs)>0:
         rst = []
         for fp in files:

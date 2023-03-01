@@ -31,6 +31,7 @@ pass
 
 def show():
     print("try such url: http://127.0.0.1:8080/func/abc?d=e&f=g")
+    print("try such url: http://127.0.0.1:8080/page/test1.html")
     print("try such url: http://127.0.0.1:8080/page/test.html")
 
 from webz import configz
