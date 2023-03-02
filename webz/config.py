@@ -5,7 +5,8 @@ from buildz import confz
 import re
 import os
 import sys
-
+import web
+import threading
 g_js_path = os.path.join(__path__[0], "js")
 g_css_path = os.path.join(__path__[0], "css")
 
@@ -32,8 +33,11 @@ def imports_obj(path):
 pass
 
 class Static(base.Base):
+    @staticmethod
+    def update_time(sec):
+        Static._Cache.update_time(sec)
+    _Cache = base.CacheFile()
     def init(self, prefix, root):
-        global webjs
         self.prefix = prefix
         if root == "webz.js":
             root = g_js_path
@@ -46,12 +50,7 @@ class Static(base.Base):
         if len(url)>0 and url[0] == "/":
             url = url[1:]
         fp = os.path.join(self.root, url)
-        if not os.path.isfile(fp):
-            self.output.set_str("404 Not Found File")
-            return 
-        with open(fp, 'rb') as f:
-            self.output.set_bytes(f.read())
-            self.output.finish(True)
+        return Static._Cache.deal(fp, self.input, self.output)
 
 pass
 class Config:
@@ -149,5 +148,5 @@ class ConfigWeb(base.Base):
             if self.output.finish():
                 break
         if self.output() is None:
-            self.output.set_str("404 Not Found Config")
+            raise web.HTTPError("404")
 pass

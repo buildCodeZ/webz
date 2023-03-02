@@ -2,6 +2,9 @@
 import json
 
 import web
+import threading
+import os
+import time
 G_Coding = "utf-8"
 def coding(code = None):
     global G_Coding
@@ -10,6 +13,52 @@ def coding(code = None):
     G_Coding = code
 
 pass
+class ThreadDict:
+    def __init__(self):
+        self.dicts = {}
+        self.lock = threading.Lock()
+    def get(self, key):
+        with self.lock:
+            if key not in self.dicts:
+                return None
+            return self.dicts[key]
+    def set(self, key, val):
+        with self.lock:
+            self.dicts[key] = val
+
+pass
+
+class CacheFile:
+    def update_time(self, sec):
+        self._update_time = sec
+    def __init__(self, update_time=60):
+        self.dicts = ThreadDict()
+        self._update_time = update_time
+    def deal(self, filepath, input, output):
+        cache = self.dicts.get(filepath)
+        curr = time.time()
+        mark_update = cache is None
+        if not mark_update:
+            mtime, last_update = cache
+            mark_update = (curr - last_update) > self._update_time
+        if mark_update:
+            if not os.path.isfile(filepath):
+                raise web.HTTPError("404")
+            mtime =  str(os.path.getmtime(filepath))
+            last_update  = curr
+            self.dicts.set(filepath, [mtime, last_update])
+        req_time = input.header("HTTP_IF_MODIFIED_SINCE")
+        etg = input.header("HTTP_IF_NONE_MATCH")
+        output.header("Last-Modified", str(mtime))
+        output.header("Etag", str(mtime))
+        if mtime == req_time:
+            raise web.HTTPError("304")
+        with open(filepath, 'rb') as f:
+            output.set_bytes(f.read())
+            output.finish(True)
+
+pass
+
 class Output:
     def header(self, *argv, **maps):
         web.header(*argv, **maps)
@@ -47,6 +96,8 @@ class Output:
 
 pass
 class Input:
+    def header(self, key, default = None):
+        return web.ctx.env.get(key, default)
     def init(self, url = None, type = None):
         self.url = url
         self.type = type

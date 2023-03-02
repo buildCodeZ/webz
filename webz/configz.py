@@ -6,6 +6,7 @@ import re
 import os
 import sys
 import buildz
+import web
 
 """
 [
@@ -125,7 +126,7 @@ class ConfigWeb(base.Base):
             if self.output.finish():
                 break
         if self.output() is None:
-            self.output.set_str("404 Not Found Config")
+            raise web.HTTPError("404")
 pass
 def run(profilepaths):
     dirpath = os.path.join(__path__[0], "profiles", "base.confz")
