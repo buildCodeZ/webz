@@ -6,33 +6,36 @@
     args: []
 }
 {
-    key: obj.config
+    key: webz.obj.config
     import: webz.configz
     call: Config
     args: [
-        (this, ref)
-        (urls, ref)
+        (buildz.this, ref)
+        (webz.urls, ref)
+    ],
+    maps: [
+        (config_type, webz.config_type, ref)
     ]
 }
 {
-    key: fc.init
+    key: webz.fc.init
     import: webz
     call: init
     args: [
-        (obj.config, ref)
+        (webz.obj.config, ref)
     ]
 }
 {
-    key: fc.run
+    key: webz.fc.run
     import: webz
     call: run
     args: [
-        (port, ref)
-        (ip, ref)
+        (webz.port, ref)
+        (webz.ip, ref)
     ]
 }
 {
-    key: main
-    calls: [fc.init, fc.run]
+    key: webz.main
+    calls: [webz.fc.init, webz.fc.run]
 }
 ]

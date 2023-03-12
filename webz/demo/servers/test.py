@@ -18,6 +18,19 @@ class Test(webz.Base):
 
 pass
 
+class Prev(webz.Base):
+    def deal(self):
+        self.output.set("prev", "testPrev")
+        print("Test Prev")
+
+pass
+class Aft(webz.Base):
+    def deal(self):
+        self.output.set("aft", "testAft")
+        print("Test Aft")
+
+pass
+
 class TestFile(webz.Base):
     def deal(self):
         self.input.default(file={})
@@ -31,6 +44,7 @@ pass
 
 def show():
     print("try such url: http://127.0.0.1:8080/func/abc?d=e&f=g")
+    print("try such url: http://127.0.0.1:8080/func/aft?d=e&f=g")
     print("try such url: http://127.0.0.1:8080/page/test1.html")
     print("try such url: http://127.0.0.1:8080/page/test.html")
 
